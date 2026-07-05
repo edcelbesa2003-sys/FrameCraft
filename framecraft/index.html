@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FrameCraft - Premium Eyewear</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer;">FrameCraft</div>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="#home" class="nav-link">Home</a></li>
+        <li><a href="#products" class="nav-link">Products</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+        <li><a href="shop.html" class="nav-link" id="shopLink" style="display:none;">Shop</a></li>
+      </ul>
+      <div class="nav-auth">
+        <!-- Cart Icon (shown when logged in) -->
+        <div class="nav-icon-group" id="cartGroup" style="display:none;">
+          <button class="nav-icon-btn" id="cartBtn" onclick="openCart()">
+            <span class="icon">🛒</span>
+            <span class="cart-badge" id="cartBadge">0</span>
+          </button>
+        </div>
+
+        <!-- Profile Icon (shown when logged in) -->
+        <div class="nav-icon-group" id="profileGroup" style="display:none;">
+          <button class="nav-icon-btn" id="profileBtn" onclick="openProfileModal()">
+            <img id="profileImage" class="profile-pic-small"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230088ee'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M12 14c-6 0-8 3-8 3v5h16v-5s-2-3-8-3z'/%3E%3C/svg%3E"
+              alt="Profile">
+          </button>
+        </div>
+
+        <!-- Auth Buttons (shown when not logged in) -->
+        <div id="authButtons" class="auth-buttons">
+          <button class="btn btn-auth" id="loginBtn" onclick="openLoginModal()">Login</button>
+          <button class="btn btn-auth btn-signup" id="signupBtn" onclick="openSignupModal()">Sign Up</button>
+        </div>
+
+        <!-- Logout Button (shown when logged in) -->
+        <button class="btn btn-logout" id="logoutBtn" style="display:none;" onclick="logout()">Logout</button>
+      </div>
+      <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeLoginModal()">&times;</span>
+      <h2>Login to FrameCraft</h2>
+      <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Email" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Login</button>
+        <p>Don't have an account? <a href="#" onclick="switchToSignup()">Sign Up</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div id="signupModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeSignupModal()">&times;</span>
+      <h2>Create Account</h2>
+      <form id="signupForm">
+        <input type="text" id="signupName" placeholder="Full Name" required>
+        <input type="email" id="signupEmail" placeholder="Email" required>
+        <input type="password" id="signupPassword" placeholder="Password" required>
+        <input type="password" id="signupConfirmPassword" placeholder="Confirm Password" required>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Sign Up</button>
+        <p>Already have an account? <a href="#" onclick="switchToLogin()">Login</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content profile-modal">
+      <span class="close" onclick="closeProfileModal()">&times;</span>
+      <div class="profile-modal-header">
+        <h2>My Profile</h2>
+      </div>
+
+      <!-- Profile Tabs -->
+      <div class="profile-modal-tabs">
+        <button class="profile-tab-btn active" data-tab="account" onclick="switchProfileTab('account')">👤
+          Account</button>
+        <button class="profile-tab-btn" data-tab="addresses" onclick="switchProfileTab('addresses')">📍
+          Addresses</button>
+        <button class="profile-tab-btn" data-tab="payments" onclick="switchProfileTab('payments')">💳 Payments</button>
+      </div>
+
+      <div class="profile-section">
+        <!-- Tab 1: Account Info -->
+        <div class="profile-tab-content active" id="profileTabAccount">
+          <!-- Profile Picture -->
+          <div class="profile-pic-section">
+            <img id="profilePictureModal" class="profile-pic-large"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230088ee'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M12 14c-6 0-8 3-8 3v5h16v-5s-2-3-8-3z'/%3E%3C/svg%3E"
+              alt="Profile">
+            <label class="upload-pic-btn" for="profilePictureInput">Change Picture</label>
+            <input type="file" id="profilePictureInput" accept="image/*" style="display:none;">
+          </div>
+        </div>
+
+        <!-- Tab 2: Addresses -->
+        <div class="profile-tab-content" id="profileTabAddresses">
+          <!-- Delivery Information - Multiple Addresses -->
+          <div class="delivery-info">
+            <h3>Delivery Addresses</h3>
+
+            <!-- Saved Addresses List -->
+            <div id="addressesList" class="addresses-list">
+              <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Add New Address Button -->
+            <button type="button" class="btn btn-add-address" onclick="openAddAddressForm()">
+              + Add New Address
+            </button>
+
+            <!-- Add/Edit Address Form (Hidden by default) -->
+            <form id="addressForm" class="address-form" style="display:none;">
+              <h4>Address Details</h4>
+              <input type="hidden" id="addressIndex" value="">
+
+              <div class="form-group-inline">
+                <div class="form-group">
+                  <label>Full Name</label>
+                  <input type="text" id="addressName" required>
+                </div>
+                <div class="form-group">
+                  <label>Phone Number</label>
+                  <input type="tel" id="addressPhone" required>
+                </div>
+              </div>
+
+              <div class="form-group-inline">
+                <div class="form-group">
+                  <label>Address</label>
+                  <input type="text" id="addressStreet" required>
+                </div>
+                <div class="form-group">
+                  <label>City</label>
+                  <input type="text" id="addressCity" required>
+                </div>
+              </div>
+
+              <div class="form-group-inline">
+                <div class="form-group">
+                  <label>State/Province</label>
+                  <input type="text" id="addressState" required>
+                </div>
+                <div class="form-group">
+                  <label>ZIP Code</label>
+                  <input type="text" id="addressZip" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Country</label>
+                <input type="text" id="addressCountry" value="Philippines">
+              </div>
+
+              <div class="form-group checkbox">
+                <input type="checkbox" id="setDefault">
+                <label for="setDefault">Set as default address</label>
+              </div>
+
+              <div class="profile-actions">
+                <button type="button" class="btn btn-primary" onclick="saveAddress()">Save Address</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelAddressForm()">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Tab 3: Payments -->
+        <div class="profile-tab-content" id="profileTabPayments">
+          <!-- Payment Methods -->
+          <div class="payment-info">
+            <h3>💳 Saved Payment Methods</h3>
+
+            <!-- Saved Payment Methods List -->
+            <div id="paymentMethodsList" class="payment-methods-list">
+              <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Add New Payment Method Button -->
+            <button type="button" class="btn btn-add-address" onclick="openAddPaymentForm()">
+              + Add New Payment Method
+            </button>
+
+            <!-- Add/Edit Payment Method Form (Hidden by default) -->
+            <form id="paymentMethodForm" class="address-form" style="display:none;">
+              <h4>Payment Method Details</h4>
+              <input type="hidden" id="paymentMethodIndex" value="">
+
+              <!-- Payment Method Type Selection -->
+              <div class="form-group">
+                <label>Payment Method Type *</label>
+                <select id="paymentMethodType" onchange="updatePaymentForm()" required>
+                  <option value="">Select a payment method...</option>
+                  <option value="credit-card">💳 Credit/Debit Card</option>
+                  <option value="paypal">🅿️ PayPal</option>
+                  <option value="maya">🏦 Maya</option>
+                  <option value="gcash">📱 GCash</option>
+                </select>
+              </div>
+
+              <!-- Credit Card Fields -->
+              <div id="creditCardFields" style="display:none;">
+                <div class="form-group">
+                  <label>Cardholder Name *</label>
+                  <input type="text" id="paymentCardName">
+                </div>
+                <div class="form-group">
+                  <label>Card Number *</label>
+                  <input type="text" id="paymentCardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                <div class="form-group-inline">
+                  <div class="form-group">
+                    <label>Expiry Date *</label>
+                    <input type="text" id="paymentCardExpiry" placeholder="MM/YY" maxlength="5">
+                  </div>
+                  <div class="form-group">
+                    <label>CVV *</label>
+                    <input type="text" id="paymentCardCvv" placeholder="123" maxlength="3">
+                  </div>
+                </div>
+              </div>
+
+              <!-- PayPal Fields -->
+              <div id="paypalFields" style="display:none;">
+                <div class="form-group">
+                  <label>PayPal Email *</label>
+                  <input type="email" id="paymentPaypalEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                  <label>PayPal Password *</label>
+                  <input type="password" id="paymentPaypalPassword" placeholder="Enter your password">
+                </div>
+              </div>
+
+              <!-- Maya Fields -->
+              <div id="mayaFields" style="display:none;">
+                <div class="form-group">
+                  <label>Registered Email *</label>
+                  <input type="email" id="paymentMayaEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                  <label>Mobile Number *</label>
+                  <input type="tel" id="paymentMayaMobile" placeholder="+63 9XX XXX XXXX">
+                </div>
+              </div>
+
+              <!-- GCash Fields -->
+              <div id="gcashFields" style="display:none;">
+                <div class="form-group">
+                  <label>GCash Mobile Number *</label>
+                  <input type="tel" id="paymentGcashMobile" placeholder="+63 9XX XXX XXXX">
+                </div>
+                <div class="form-group">
+                  <label>GCash PIN *</label>
+                  <input type="password" id="paymentGcashPin" placeholder="Enter your PIN" maxlength="4">
+                </div>
+              </div>
+
+              <div class="form-group checkbox">
+                <input type="checkbox" id="setDefaultPayment">
+                <label for="setDefaultPayment">Set as default payment method</label>
+              </div>
+
+              <div class="profile-actions">
+                <button type="button" class="btn btn-primary" onclick="savePaymentMethod()">Save Payment Method</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelPaymentForm()">Cancel</button>
+              </div>
+            </form>
+
+            <!-- Delete/Manage Payment Methods Info -->
+            <p class="payment-info-text" id="paymentInfoText"
+              style="display:none; font-size: 12px; color: #8fa4bb; margin-top: 12px;">
+              ℹ️ Manage your saved payment methods. Only delete if you no longer use this card or account.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add to Cart Modal -->
+  <div id="cartModal" class="modal">
+    <div class="modal-content cart-modal-content">
+      <span class="close" onclick="closeCartModal()">&times;</span>
+
+      <div class="cart-modal-body">
+        <!-- Product Image -->
+        <div class="cart-modal-image">
+          <img id="modalProductImage" src="" alt="Product">
+        </div>
+
+        <!-- Product Info -->
+        <div class="cart-modal-info">
+          <h2 id="modalProductName"></h2>
+          <p id="modalProductDesc" class="product-desc"></p>
+
+          <!-- Rating -->
+          <div class="rating-section">
+            <span class="rating-stars" id="modalRating"></span>
+            <span id="modalReviews" class="rating-count"></span>
+          </div>
+
+          <!-- Stock Info -->
+          <div class="stock-section">
+            <span class="stock-label">Stock Available:</span>
+            <span id="modalStock" class="stock-count"></span>
+          </div>
+
+          <!-- Size Selection -->
+          <div class="size-section">
+            <label>Size:</label>
+            <div class="size-options">
+              <button class="size-btn" onclick="selectSize('S')">S</button>
+              <button class="size-btn" onclick="selectSize('M')">M</button>
+              <button class="size-btn" onclick="selectSize('L')">L</button>
+              <button class="size-btn" onclick="selectSize('XL')">XL</button>
+            </div>
+            <input type="hidden" id="selectedSize">
+          </div>
+
+          <!-- Quantity Selection -->
+          <div class="quantity-section">
+            <label>Quantity:</label>
+            <div class="quantity-control">
+              <button onclick="decreaseQuantity()">−</button>
+              <input type="number" id="quantityInput" value="1" min="1" readonly>
+              <button onclick="increaseQuantity()">+</button>
+            </div>
+          </div>
+
+          <!-- Price -->
+          <div class="price-section">
+            <span id="modalPrice" class="price"></span>
+            <span id="modalOriginalPrice" class="original-price"></span>
+          </div>
+
+          <!-- Add to Cart Button -->
+          <button class="btn-modal-add-to-cart" onclick="confirmAddToCart()">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Slider -->
+  <section id="home" class="hero">
+    <div class="hero-slider" id="heroSlider">
+
+      <!-- Slide 1 — Classic Aviator -->
+      <div class="hero-slide active" style="background:linear-gradient(120deg,#0a1628 0%,#0d2244 60%,#0a2a50 100%);">
+        <div class="slide-bg-art">
+          <svg class="slide-svg" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <radialGradient id="g1" cx="70%" cy="40%" r="55%">
+                <stop offset="0%" stop-color="#0099ff" stop-opacity=".18" />
+                <stop offset="100%" stop-color="transparent" />
+              </radialGradient>
+            </defs>
+            <rect width="900" height="600" fill="url(#g1)" />
+            <g transform="translate(490,250)" opacity=".22">
+              <circle cx="-90" cy="0" r="110" fill="none" stroke="#4db8ff" stroke-width="12" />
+              <circle cx="90" cy="0" r="110" fill="none" stroke="#4db8ff" stroke-width="12" />
+              <line x1="-90" y1="0" x2="-180" y2="-30" stroke="#4db8ff" stroke-width="8" stroke-linecap="round" />
+              <line x1="90" y1="0" x2="180" y2="-30" stroke="#4db8ff" stroke-width="8" stroke-linecap="round" />
+              <path d="M -180 0 Q -60 20 0 0 Q 60 20 180 0" fill="none" stroke="#4db8ff" stroke-width="8"
+                stroke-linecap="round" />
+            </g>
+            <circle cx="120" cy="80" r="180" fill="#0077ee" opacity=".07" />
+            <circle cx="800" cy="520" r="140" fill="#00ccff" opacity=".08" />
+            <circle cx="700" cy="100" r="60" fill="#4db8ff" opacity=".1" />
+          </svg>
+        </div>
+        <div class="slide-content">
+          <div class="slide-tag">New Collection 2025</div>
+          <h1 class="slide-title">Premium<br>Eyewear</h1>
+          <p class="slide-subtitle">Elevate your style with FrameCraft's iconic frames — crafted for those who see the
+            world differently.</p>
+          <div class="slide-actions">
+            <button class="btn btn-hero-primary" onclick="goToProducts()">Shop Now</button>
+            <button class="btn btn-hero-ghost"
+              onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Our Story</button>
+          </div>
+          <div class="slide-stats">
+            <div class="stat"><span class="stat-n">500+</span><span class="stat-l">Styles</span></div>
+            <div class="stat-divider"></div>
+            <div class="stat"><span class="stat-n">98%</span><span class="stat-l">Happy Clients</span></div>
+            <div class="stat-divider"></div>
+            <div class="stat"><span class="stat-n">12+</span><span class="stat-l">Years</span></div>
+          </div>
+        </div>
+        <div class="slide-visual slide-img-boost">
+          <div class="frame-showcase">
+            <div class="frame-glow"></div>
+            <img src="img/Classic Viator Blue.png" alt="Classic Aviator" class="frame-hero-img"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <svg class="frame-hero-svg" viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg" style="display:none;">
+              <defs>
+                <filter id="glow1">
+                  <feGaussianBlur stdDeviation="6" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <linearGradient id="lensGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#4db8ff" stop-opacity=".5" />
+                  <stop offset="100%" stop-color="#0055a5" stop-opacity=".3" />
+                </linearGradient>
+              </defs>
+              <g filter="url(#glow1)">
+                <ellipse cx="130" cy="165" rx="95" ry="85" fill="url(#lensGrad1)" stroke="#4db8ff" stroke-width="5" />
+                <ellipse cx="290" cy="165" rx="95" ry="85" fill="url(#lensGrad1)" stroke="#4db8ff" stroke-width="5" />
+                <path d="M 225 165 Q 210 180 195 165" fill="none" stroke="#4db8ff" stroke-width="4"
+                  stroke-linecap="round" />
+                <line x1="35" y1="130" x2="5" y2="110" stroke="#4db8ff" stroke-width="5" stroke-linecap="round" />
+                <line x1="385" y1="130" x2="415" y2="110" stroke="#4db8ff" stroke-width="5" stroke-linecap="round" />
+              </g>
+            </svg>
+            <div class="frame-label">Classic Aviator</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 2 — Cat Eye -->
+      <div class="hero-slide" style="background:linear-gradient(120deg,#1a0a2e 0%,#2d1052 60%,#1e0a3a 100%);">
+        <div class="slide-bg-art">
+          <svg class="slide-svg" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <radialGradient id="g2" cx="30%" cy="60%" r="55%">
+                <stop offset="0%" stop-color="#cc44ff" stop-opacity=".2" />
+                <stop offset="100%" stop-color="transparent" />
+              </radialGradient>
+            </defs>
+            <rect width="900" height="600" fill="url(#g2)" />
+            <circle cx="780" cy="80" r="200" fill="#aa00ff" opacity=".06" />
+            <circle cx="100" cy="500" r="150" fill="#ff44cc" opacity=".07" />
+            <polygon points="700,50 740,100 700,150 660,100" fill="none" stroke="#cc44ff" stroke-width="1.5"
+              opacity=".3" />
+            <polygon points="150,200 180,240 150,280 120,240" fill="none" stroke="#aa44ff" stroke-width="1.5"
+              opacity=".25" />
+          </svg>
+        </div>
+        <div class="slide-content">
+          <div class="slide-tag"
+            style="background:rgba(160,80,255,.18);border-color:rgba(160,80,255,.4);color:#cc88ff;">Bestseller</div>
+          <h1 class="slide-title"
+            style="background:linear-gradient(135deg,#fff,#dd99ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+            Cat Eye<br>Elegance</h1>
+          <p class="slide-subtitle">Turn heads wherever you go. Our Cat Eye collection is where fashion meets artistry —
+            bold, feminine, unforgettable.</p>
+          <div class="slide-actions">
+            <button class="btn btn-hero-primary"
+              style="background:linear-gradient(135deg,#9933ee,#cc44ff);box-shadow:0 8px 28px rgba(153,51,238,.45);"
+              onclick="goToProducts()">Shop Now</button>
+            <button class="btn btn-hero-ghost"
+              onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Our Story</button>
+          </div>
+          <div class="slide-stats">
+            <div class="stat"><span class="stat-n" style="color:#cc88ff;">312</span><span class="stat-l">Reviews</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat"><span class="stat-n" style="color:#cc88ff;">4.9★</span><span class="stat-l">Rating</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat"><span class="stat-n" style="color:#cc88ff;">15%</span><span class="stat-l">OFF
+                Today</span></div>
+          </div>
+        </div>
+        <div class="slide-visual slide-img-boost">
+          <div class="frame-showcase">
+            <div class="frame-glow"
+              style="background:radial-gradient(circle,rgba(153,51,238,.5) 0%,rgba(153,51,238,.15) 40%,transparent 70%);">
+            </div>
+            <img src="img/Cat Eye Elegance.png" alt="Cat Eye Elegance" class="frame-hero-img"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <svg class="frame-hero-svg" viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg" style="display:none;">
+              <defs>
+                <filter id="glow2">
+                  <feGaussianBlur stdDeviation="6" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <linearGradient id="lensGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#dd88ff" stop-opacity=".45" />
+                  <stop offset="100%" stop-color="#7700cc" stop-opacity=".25" />
+                </linearGradient>
+              </defs>
+              <g filter="url(#glow2)">
+                <path
+                  d="M 35 175 Q 50 130 100 110 Q 150 95 185 130 Q 200 155 185 185 Q 160 210 110 210 Q 60 208 35 175 Z"
+                  fill="url(#lensGrad2)" stroke="#cc44ff" stroke-width="5" />
+                <path
+                  d="M 235 130 Q 270 95 320 110 Q 370 130 385 175 Q 360 208 310 210 Q 260 210 235 185 Q 220 155 235 130 Z"
+                  fill="url(#lensGrad2)" stroke="#cc44ff" stroke-width="5" />
+                <path d="M 185 155 Q 210 165 235 155" fill="none" stroke="#cc44ff" stroke-width="4"
+                  stroke-linecap="round" />
+                <line x1="35" y1="170" x2="5" y2="155" stroke="#cc44ff" stroke-width="5" stroke-linecap="round" />
+                <line x1="385" y1="170" x2="415" y2="155" stroke="#cc44ff" stroke-width="5" stroke-linecap="round" />
+              </g>
+            </svg>
+            <div class="frame-label" style="color:#dd88ff;">Cat Eye Elegance</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3 — Luxury -->
+      <div class="hero-slide" style="background:linear-gradient(120deg,#0a1f14 0%,#0d2e1a 60%,#0a2218 100%);">
+        <div class="slide-bg-art">
+          <svg class="slide-svg" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <radialGradient id="g3" cx="75%" cy="30%" r="60%">
+                <stop offset="0%" stop-color="#00ee88" stop-opacity=".15" />
+                <stop offset="100%" stop-color="transparent" />
+              </radialGradient>
+            </defs>
+            <rect width="900" height="600" fill="url(#g3)" />
+            <circle cx="820" cy="100" r="200" fill="#00cc66" opacity=".07" />
+            <circle cx="80" cy="480" r="160" fill="#00ffaa" opacity=".06" />
+            <g opacity=".12" stroke="#00ee88" stroke-width="1" fill="none">
+              <polygon points="500,50 535,70 535,110 500,130 465,110 465,70" />
+              <polygon points="570,90 605,110 605,150 570,170 535,150 535,110" />
+              <polygon points="430,90 465,110 465,150 430,170 395,150 395,110" />
+            </g>
+          </svg>
+        </div>
+        <div class="slide-content">
+          <div class="slide-tag" style="background:rgba(0,180,80,.18);border-color:rgba(0,220,100,.4);color:#44dd88;">
+            Premium Line</div>
+          <h1 class="slide-title"
+            style="background:linear-gradient(135deg,#fff,#88ffcc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+            Luxury<br>Collection</h1>
+          <p class="slide-subtitle">Titanium frames, hand-polished to perfection. The Luxury Premium collection — for
+            those who settle for nothing less than extraordinary.</p>
+          <div class="slide-actions">
+            <button class="btn btn-hero-primary"
+              style="background:linear-gradient(135deg,#00994d,#00cc66);box-shadow:0 8px 28px rgba(0,180,80,.45);"
+              onclick="goToProducts()">Shop Now</button>
+            <button class="btn btn-hero-ghost"
+              onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Our Story</button>
+          </div>
+          <div class="slide-stats">
+            <div class="stat"><span class="stat-n" style="color:#44dd88;">₱249.99</span><span class="stat-l">From</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat"><span class="stat-n" style="color:#44dd88;">5.0★</span><span class="stat-l">Perfect
+                Score</span></div>
+            <div class="stat-divider"></div>
+            <div class="stat"><span class="stat-n" style="color:#44dd88;">Ti</span><span class="stat-l">Titanium</span>
+            </div>
+          </div>
+        </div>
+        <div class="slide-visual">
+          <div class="frame-showcase">
+            <div class="frame-glow"
+              style="background:radial-gradient(circle,rgba(0,200,80,.5) 0%,rgba(0,200,80,.15) 40%,transparent 70%);">
+            </div>
+            <img src="img/Luxury Collection.png" alt="Luxury Collection" class="frame-hero-img"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <svg class="frame-hero-svg" viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg" style="display:none;">
+              <defs>
+                <filter id="glow3">
+                  <feGaussianBlur stdDeviation="6" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <linearGradient id="lensGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#88ffcc" stop-opacity=".4" />
+                  <stop offset="100%" stop-color="#008844" stop-opacity=".2" />
+                </linearGradient>
+                <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffe066" />
+                  <stop offset="100%" stop-color="#cc9900" />
+                </linearGradient>
+              </defs>
+              <g filter="url(#glow3)">
+                <circle cx="130" cy="165" r="100" fill="url(#lensGrad3)" stroke="url(#goldGrad)" stroke-width="6" />
+                <circle cx="290" cy="165" r="100" fill="url(#lensGrad3)" stroke="url(#goldGrad)" stroke-width="6" />
+                <path d="M 230 165 Q 210 175 190 165" fill="none" stroke="url(#goldGrad)" stroke-width="5"
+                  stroke-linecap="round" />
+                <line x1="30" y1="140" x2="5" y2="125" stroke="url(#goldGrad)" stroke-width="5"
+                  stroke-linecap="round" />
+                <line x1="390" y1="140" x2="415" y2="125" stroke="url(#goldGrad)" stroke-width="5"
+                  stroke-linecap="round" />
+              </g>
+            </svg>
+            <div class="frame-label" style="color:#44dd88;">Luxury Collection</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4 — Sport -->
+      <div class="hero-slide" style="background:linear-gradient(120deg,#1a1008 0%,#2e1e00 60%,#1e1500 100%);">
+        <div class="slide-bg-art">
+          <svg class="slide-svg" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <radialGradient id="g4" cx="60%" cy="70%" r="55%">
+                <stop offset="0%" stop-color="#ff9900" stop-opacity=".18" />
+                <stop offset="100%" stop-color="transparent" />
+              </radialGradient>
+            </defs>
+            <rect width="900" height="600" fill="url(#g4)" />
+            <circle cx="750" cy="500" r="220" fill="#ff8800" opacity=".07" />
+            <circle cx="150" cy="100" r="140" fill="#ffcc44" opacity=".06" />
+          </svg>
+        </div>
+        <div class="slide-content">
+          <div class="slide-tag" style="background:rgba(255,140,0,.18);border-color:rgba(255,180,0,.4);color:#ffbb44;">
+            Sport &amp; Outdoor</div>
+          <h1 class="slide-title"
+            style="background:linear-gradient(135deg,#fff,#ffdd88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+            Built for<br>Action</h1>
+          <p class="slide-subtitle">From mountain trails to city streets — FrameCraft sport frames deliver UV
+            protection, durability, and bold style for every adventure.</p>
+          <div class="slide-actions">
+            <button class="btn btn-hero-primary"
+              style="background:linear-gradient(135deg,#cc6600,#ff9900);box-shadow:0 8px 28px rgba(255,140,0,.45);"
+              onclick="goToProducts()">Shop Now</button>
+            <button class="btn btn-hero-ghost"
+              onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Our Story</button>
+          </div>
+          <div class="slide-stats">
+            <div class="stat"><span class="stat-n" style="color:#ffbb44;">UV400</span><span
+                class="stat-l">Protection</span></div>
+            <div class="stat-divider"></div>
+            <div class="stat"><span class="stat-n" style="color:#ffbb44;">3x</span><span
+                class="stat-l">Durability</span></div>
+            <div class="stat-divider"></div>
+            <div class="stat"><span class="stat-n" style="color:#ffbb44;">IPX6</span><span
+                class="stat-l">Waterproof</span></div>
+          </div>
+        </div>
+        <div class="slide-visual">
+          <div class="frame-showcase">
+            <div class="frame-glow"
+              style="background:radial-gradient(circle,rgba(255,140,0,.5) 0%,rgba(255,140,0,.15) 40%,transparent 70%);">
+            </div>
+            <img src="img/adventure.png" alt="Built for Action" class="frame-hero-img"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <svg class="frame-hero-svg" viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg" style="display:none;">
+              <defs>
+                <filter id="glow4">
+                  <feGaussianBlur stdDeviation="6" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <linearGradient id="lensGrad4" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffcc44" stop-opacity=".4" />
+                  <stop offset="100%" stop-color="#ff6600" stop-opacity=".25" />
+                </linearGradient>
+              </defs>
+              <g filter="url(#glow4)">
+                <path
+                  d="M 20 140 Q 10 200 30 240 Q 80 270 130 268 Q 180 265 200 240 Q 220 265 270 268 Q 320 270 390 240 Q 410 200 400 140 Q 370 100 300 100 Q 240 98 210 120 Q 200 130 190 120 Q 160 98 100 100 Q 50 100 20 140 Z"
+                  fill="url(#lensGrad4)" stroke="#ff9900" stroke-width="5" />
+                <rect x="188" y="130" width="24" height="20" rx="4" fill="#ff9900" opacity=".7" />
+                <line x1="20" y1="180" x2="2" y2="165" stroke="#ff9900" stroke-width="6" stroke-linecap="round" />
+                <line x1="400" y1="180" x2="418" y2="165" stroke="#ff9900" stroke-width="6" stroke-linecap="round" />
+              </g>
+            </svg>
+            <div class="frame-label" style="color:#ffbb44;">Sport Vision Pro</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /hero-slider -->
+
+    <!-- Controls -->
+    <button class="hero-arrow hero-arrow-prev" id="heroPrev" aria-label="Previous slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+    </button>
+    <button class="hero-arrow hero-arrow-next" id="heroNext" aria-label="Next slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="9 6 15 12 9 18" />
+      </svg>
+    </button>
+    <div class="hero-dots" id="heroDots">
+      <button class="hero-dot active" data-idx="0" aria-label="Slide 1"></button>
+      <button class="hero-dot" data-idx="1" aria-label="Slide 2"></button>
+      <button class="hero-dot" data-idx="2" aria-label="Slide 3"></button>
+      <button class="hero-dot" data-idx="3" aria-label="Slide 4"></button>
+    </div>
+    <div class="hero-progress" id="heroProgress">
+      <div class="hero-progress-bar" id="heroProgressBar"></div>
+    </div>
+    <div class="hero-scroll-hint">
+      <span>Scroll</span>
+      <div class="scroll-arrow">
+        <svg viewBox="0 0 16 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="2" width="12" height="18" rx="6" />
+          <circle cx="8" cy="7" r="1.5" fill="currentColor" class="scroll-dot" />
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Section -->
+  <section id="products" class="products">
+    <div class="container">
+      <div class="collection-header">
+        <div class="collection-header-left">
+          <div class="collection-eyebrow"><span class="eyebrow-dot"></span>Curated Selection</div>
+          <h2 class="collection-title">Our Collection</h2>
+          <p class="collection-desc">Every frame tells a story. Discover eyewear that complements your vision — and your
+            style.</p>
+        </div>
+        <div class="collection-header-right">
+          <div class="collection-filter-tabs" id="filterTabs">
+            <button class="filter-tab active" data-filter="all">All Styles</button>
+            <button class="filter-tab" data-filter="aviator">Aviator</button>
+            <button class="filter-tab" data-filter="cat-eye">Cat Eye</button>
+            <button class="filter-tab" data-filter="round">Round</button>
+            <button class="filter-tab" data-filter="sport">Sport</button>
+          </div>
+        </div>
+      </div>
+      <div class="products-grid" id="productsGrid"></div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about">
+    <div class="about-bg-art">
+      <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <radialGradient id="abg1" cx="20%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#0099ff" stop-opacity=".12" />
+            <stop offset="100%" stop-color="transparent" />
+          </radialGradient>
+          <radialGradient id="abg2" cx="80%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#4db8ff" stop-opacity=".08" />
+            <stop offset="100%" stop-color="transparent" />
+          </radialGradient>
+        </defs>
+        <rect width="1200" height="600" fill="url(#abg1)" />
+        <rect width="1200" height="600" fill="url(#abg2)" />
+        <g transform="translate(980,300)" opacity=".07" stroke="#4db8ff" stroke-width="10" fill="none">
+          <circle cx="-100" cy="0" r="120" />
+          <circle cx="100" cy="0" r="120" />
+          <line x1="-100" y1="0" x2="-220" y2="-40" />
+          <line x1="100" y1="0" x2="220" y2="-40" />
+          <path d="M -220 0 Q -60 20 0 0 Q 60 20 220 0" />
+        </g>
+        <circle cx="100" cy="100" r="200" fill="#0077ee" opacity=".05" />
+        <circle cx="1100" cy="500" r="160" fill="#4db8ff" opacity=".05" />
+      </svg>
+    </div>
+    <div class="container about-inner">
+      <div class="about-header">
+        <div class="about-eyebrow"><span class="about-eyebrow-dot"></span>Our Story</div>
+        <h2 class="about-title">Crafted for Those Who<br>See Differently</h2>
+        <p class="about-lead">At FrameCraft, we believe eyewear is more than a necessity — it's an expression of who you
+          are. Every frame in our collection is chosen with purpose, precision, and passion.</p>
+      </div>
+      <div class="about-stats">
+        <div class="about-stat"><span class="about-stat-n">500+</span><span class="about-stat-l">Curated Styles</span>
+        </div>
+        <div class="about-stat-divider"></div>
+        <div class="about-stat"><span class="about-stat-n">12+</span><span class="about-stat-l">Years of Craft</span>
+        </div>
+        <div class="about-stat-divider"></div>
+        <div class="about-stat"><span class="about-stat-n">98%</span><span class="about-stat-l">Happy Clients</span>
+        </div>
+        <div class="about-stat-divider"></div>
+        <div class="about-stat"><span class="about-stat-n">50+</span><span class="about-stat-l">Top Designers</span>
+        </div>
+      </div>
+      <div class="about-cards">
+        <div class="about-card">
+          <div class="about-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+          </div>
+          <h3>Premium Quality</h3>
+          <p>Every frame is handpicked from the world's finest designers — built to last, made to impress.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="1" y="3" width="15" height="13" rx="2" />
+              <path d="M16 8h5l2 3v3h-7V8z" />
+              <circle cx="5.5" cy="18.5" r="2.5" />
+              <circle cx="18.5" cy="18.5" r="2.5" />
+            </svg>
+          </div>
+          <h3>Free Shipping</h3>
+          <p>Complimentary delivery on all orders over ₱2,500. Fast, secure, and tracked door-to-door.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </div>
+          <h3>Lifetime Support</h3>
+          <p>Our dedicated team is with you every step — from choosing your frame to years of aftercare.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+          </div>
+          <h3>Easy Returns</h3>
+          <p>Not the right fit? Return within 30 days, no questions asked. Your satisfaction is guaranteed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer / Contact -->
+  <footer class="footer" id="contact">
+    <div class="footer-top">
+      <div class="container footer-top-inner">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="flogGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#4db8ff" />
+                  <stop offset="100%" stop-color="#0055a5" />
+                </linearGradient>
+              </defs>
+              <circle cx="11" cy="20" r="8" fill="none" stroke="url(#flogGrad)" stroke-width="2.5" />
+              <circle cx="25" cy="20" r="8" fill="none" stroke="url(#flogGrad)" stroke-width="2.5" />
+              <path d="M 19 20 Q 18 22 17 20" fill="none" stroke="url(#flogGrad)" stroke-width="2"
+                stroke-linecap="round" />
+              <line x1="3" y1="17" x2="1" y2="15" stroke="url(#flogGrad)" stroke-width="2" stroke-linecap="round" />
+              <line x1="33" y1="17" x2="35" y2="15" stroke="url(#flogGrad)" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <span class="footer-logo-text">FrameCraft</span>
+          </div>
+          <p class="footer-tagline">Eyewear crafted for those who see<br>the world differently.</p>
+          <div class="footer-socials">
+            <a href="#" class="footer-social-btn" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+            </a>
+            <a href="#" class="footer-social-btn" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              </svg>
+            </a>
+            <a href="#" class="footer-social-btn" aria-label="TikTok">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+              </svg>
+            </a>
+            <a href="#" class="footer-social-btn" aria-label="X (Twitter)">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">Shop</h4>
+          <ul class="footer-links">
+            <li><a href="#products">New Arrivals</a></li>
+            <li><a href="#products">Aviators</a></li>
+            <li><a href="#products">Cat Eye</a></li>
+            <li><a href="#products">Luxury Collection</a></li>
+            <li><a href="#products">Sport Vision</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">Company</h4>
+          <ul class="footer-links">
+            <li><a href="#about">Our Story</a></li>
+            <li><a href="#about">Craftsmanship</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Sustainability</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-col-title">Support</h4>
+          <ul class="footer-links">
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Shipping &amp; Returns</a></li>
+            <li><a href="#">Frame Fitting Guide</a></li>
+            <li><a href="#">Warranty</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p class="footer-copy">&copy; 2025 FrameCraft. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="#">Privacy Policy</a>
+          <span class="footer-dot">·</span>
+          <a href="#">Terms of Use</a>
+          <span class="footer-dot">·</span>
+          <a href="#">Cookie Settings</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="main.js"></script>
+
+</body>
+
+</html>

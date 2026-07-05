@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - FrameCraft</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="checkout.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">FrameCraft</div>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html#home" class="nav-link">Home</a></li>
+        <li><a href="index.html#products" class="nav-link">Products</a></li>
+        <li><a href="index.html#about" class="nav-link">About</a></li>
+        <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+        <li><a href="shop.html" class="nav-link" id="shopLink" style="display:none;">Shop</a></li>
+      </ul>
+      <div class="nav-auth">
+        <!-- Cart Icon -->
+        <div class="nav-icon-group" id="cartGroup" style="display:none;">
+          <button class="nav-icon-btn" id="cartBtn" onclick="openCart()">
+            <span class="icon">🛒</span>
+            <span class="cart-badge" id="cartBadge">0</span>
+          </button>
+        </div>
+
+        <!-- Profile Icon -->
+        <div class="nav-icon-group" id="profileGroup" style="display:none;">
+          <button class="nav-icon-btn" id="profileBtn" onclick="openProfileModal()">
+            <img id="profileImage" class="profile-pic-small" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230088ee'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M12 14c-6 0-8 3-8 3v5h16v-5s-2-3-8-3z'/%3E%3C/svg%3E" alt="Profile">
+          </button>
+        </div>
+
+        <!-- Logout Button -->
+        <button class="btn btn-logout" id="logoutBtn" style="display:none;" onclick="logout()">Logout</button>
+      </div>
+      <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Checkout Section -->
+  <section class="checkout-section">
+    <div class="container checkout-container">
+      <h1 class="checkout-title">Checkout</h1>
+
+      <div class="checkout-content">
+        <!-- Left: Delivery & Payment Info -->
+        <div class="checkout-form-section">
+          <!-- Delivery Information -->
+          <div class="form-card">
+            <h2 class="form-card-title">Delivery Information</h2>
+            
+            <!-- Info Mode Toggle -->
+            <div class="info-mode-toggle">
+              <button type="button" class="toggle-btn active" id="useSavedBtn" onclick="useSavedInfo()">
+                📋 Use Saved Address
+              </button>
+              <button type="button" class="toggle-btn" id="manualEntryBtn" onclick="useManualEntry()">
+                ✏️ Manual Entry
+              </button>
+            </div>
+
+            <!-- Saved Addresses Dropdown -->
+            <div id="savedAddressesContainer" class="saved-addresses-container">
+              <div class="form-group">
+                <label for="savedAddressSelect">Select Address *</label>
+                <select id="savedAddressSelect" onchange="loadSelectedAddress()">
+                  <!-- Populated by JavaScript -->
+                </select>
+              </div>
+            </div>
+
+            <!-- Selected Address Summary -->
+            <div id="selectedAddressSummary" class="address-summary">
+              <h4>📍 Delivery Address</h4>
+              <div id="selectedAddressDisplay" class="address-display"></div>
+            </div>
+
+            <form id="deliveryForm" class="checkout-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="fullName">Full Name *</label>
+                  <input type="text" id="fullName" required>
+                </div>
+                <div class="form-group">
+                  <label for="email">Email *</label>
+                  <input type="email" id="email" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="phone">Phone Number *</label>
+                  <input type="tel" id="phone" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="address">Street Address *</label>
+                  <input type="text" id="address" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="city">City *</label>
+                  <input type="text" id="city" required>
+                </div>
+                <div class="form-group">
+                  <label for="state">State/Province *</label>
+                  <input type="text" id="state" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="zipCode">ZIP Code *</label>
+                  <input type="text" id="zipCode" required>
+                </div>
+                <div class="form-group">
+                  <label for="country">Country *</label>
+                  <input type="text" id="country" value="Philippines" required>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="form-card">
+            <h2 class="form-card-title">Payment Method</h2>
+            
+            <!-- Payment Mode Toggle -->
+            <div class="payment-mode-toggle" id="paymentModeToggle" style="display:none;">
+              <button type="button" class="toggle-btn active" id="useSavedPaymentBtn" onclick="useSavedPayment()">
+                💾 Use Saved Payment
+              </button>
+              <button type="button" class="toggle-btn" id="manualPaymentBtn" onclick="useManualPayment()">
+                ➕ New Payment Method
+              </button>
+            </div>
+
+            <!-- Saved Payment Methods Dropdown -->
+            <div id="savedPaymentContainer" class="saved-payment-container" style="display:none;">
+              <div class="form-group">
+                <label for="savedPaymentSelect">Select Payment Method *</label>
+                <select id="savedPaymentSelect" onchange="loadSelectedPayment()">
+                  <!-- Populated by JavaScript -->
+                </select>
+              </div>
+            </div>
+
+            <form id="paymentForm" class="payment-methods">
+              <div class="payment-option">
+                <input type="radio" id="creditCard" name="paymentMethod" value="credit-card" checked>
+                <label for="creditCard" class="payment-label">
+                  <div class="payment-icon">💳</div>
+                  <div class="payment-info">
+                    <span class="payment-title">Credit/Debit Card</span>
+                    <span class="payment-desc">Visa, Mastercard, American Express</span>
+                  </div>
+                </label>
+              </div>
+
+              <div class="payment-option">
+                <input type="radio" id="paypal" name="paymentMethod" value="paypal">
+                <label for="paypal" class="payment-label">
+                  <div class="payment-icon">🅿️</div>
+                  <div class="payment-info">
+                    <span class="payment-title">PayPal</span>
+                    <span class="payment-desc">Fast and secure payment with PayPal</span>
+                  </div>
+                </label>
+              </div>
+
+              <div class="payment-option">
+                <input type="radio" id="maya" name="paymentMethod" value="maya">
+                <label for="maya" class="payment-label">
+                  <div class="payment-icon">🏦</div>
+                  <div class="payment-info">
+                    <span class="payment-title">Maya</span>
+                    <span class="payment-desc">Pay with Maya e-wallet</span>
+                  </div>
+                </label>
+              </div>
+
+              <div class="payment-option">
+                <input type="radio" id="gcash" name="paymentMethod" value="gcash">
+                <label for="gcash" class="payment-label">
+                  <div class="payment-icon">📱</div>
+                  <div class="payment-info">
+                    <span class="payment-title">GCash</span>
+                    <span class="payment-desc">Pay with GCash mobile wallet</span>
+                  </div>
+                </label>
+              </div>
+            </form>
+
+            <!-- Credit Card Details (shown when credit card selected) -->
+            <div id="creditCardDetails" class="payment-details">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="cardName">Cardholder Name *</label>
+                  <input type="text" id="cardName">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="cardNumber">Card Number *</label>
+                  <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="cardExpiry">Expiry Date *</label>
+                  <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+                </div>
+                <div class="form-group">
+                  <label for="cardCvv">CVV *</label>
+                  <input type="text" id="cardCvv" placeholder="123" maxlength="3">
+                </div>
+              </div>
+            </div>
+
+            <!-- PayPal Details (shown when paypal selected) -->
+            <div id="paypalDetails" class="payment-details">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="paypalEmail">PayPal Email *</label>
+                  <input type="email" id="paypalEmail" placeholder="your@email.com">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="paypalPassword">PayPal Password *</label>
+                  <input type="password" id="paypalPassword" placeholder="Enter your password">
+                </div>
+              </div>
+
+              <p class="payment-note">💡 You will be redirected to PayPal to complete the payment securely.</p>
+            </div>
+
+            <!-- Maya Details (shown when maya selected) -->
+            <div id="mayaDetails" class="payment-details">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="mayaEmail">Registered Email *</label>
+                  <input type="email" id="mayaEmail" placeholder="your@email.com">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="mayaMobile">Mobile Number *</label>
+                  <input type="tel" id="mayaMobile" placeholder="+63 9XX XXX XXXX">
+                </div>
+              </div>
+
+              <p class="payment-note">💡 You will receive a secure link via SMS to complete the payment.</p>
+            </div>
+
+            <!-- GCash Details (shown when gcash selected) -->
+            <div id="gcashDetails" class="payment-details">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="gcashMobile">GCash Mobile Number *</label>
+                  <input type="tel" id="gcashMobile" placeholder="+63 9XX XXX XXXX">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="gcashPin">GCash PIN *</label>
+                  <input type="password" id="gcashPin" placeholder="Enter your PIN" maxlength="4">
+                </div>
+              </div>
+
+              <p class="payment-note">💡 You will receive a verification code via SMS.</p>
+            </div>
+
+            <!-- Save Payment Method Checkbox -->
+            <div class="save-payment-checkbox">
+              <label>
+                <input type="checkbox" id="savePaymentMethod" checked>
+                <span>Save this payment method for future orders</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="checkout-summary-section">
+          <div class="order-summary">
+            <h2 class="summary-title">Order Summary</h2>
+
+            <!-- Cart Items -->
+            <div class="cart-items" id="cartItemsSummary">
+              <!-- Items will be rendered here -->
+            </div>
+
+            <!-- Divider -->
+            <div class="summary-divider"></div>
+
+            <!-- Summary Details -->
+            <div class="summary-details">
+              <div class="summary-row">
+                <span>Subtotal:</span>
+                <span id="subtotal">₱0.00</span>
+              </div>
+              <div class="summary-row" id="discountRow" style="display: none; color: var(--green);">
+                <span>Discount (<span id="discountName">None</span>):</span>
+                <span id="discountValue">-₱0.00</span>
+              </div>
+              <div class="summary-row">
+                <span>Shipping:</span>
+                <span id="shipping">₱100.00</span>
+              </div>
+              <div class="summary-row">
+                <span>Tax (12%):</span>
+                <span id="tax">₱0.00</span>
+              </div>
+              <div class="summary-row total">
+                <span>Total:</span>
+                <span id="total">₱0.00</span>
+              </div>
+            </div>
+
+            <!-- Promo Code Input Group -->
+            <div class="promo-code-container" style="margin-top: 16px; display: flex; gap: 8px;">
+              <input type="text" id="promoCodeInput" placeholder="Enter Promo Code" style="flex: 1; padding: 10px 12px; border: 1px solid var(--blue-border); border-radius: var(--r-xs); font-size: 13px; font-weight: 500;">
+              <button type="button" class="btn-card-action" onclick="applyPromoCode()" style="width: auto; padding: 10px 16px; margin: 0; font-size: 13px;">Apply</button>
+            </div>
+            <div id="promoFeedback" style="display: none; font-size: 12px; font-weight: 600; margin-top: 8px; margin-bottom: 8px;"></div>
+
+            <!-- Place Order Button -->
+            <button class="btn-place-order" onclick="placeOrder()">Place Order</button>
+
+            <!-- Back to Shop -->
+            <button class="btn-back-to-shop" onclick="backToShop()">Back to Shop</button>
+
+            <!-- Track Order -->
+            <button class="btn-track-order" onclick="window.location.href='deliverystat.html'" style="margin-top: 12px;">🚚 Track Order</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty Cart View -->
+      <div id="emptyCartView" class="empty-cart-view" style="display: none;">
+        <div class="empty-cart-card">
+          <div class="empty-cart-icon-container">🛒</div>
+          <h2>Your Cart is Empty</h2>
+          <p>You don't have any items in your cart to checkout yet. Explore our premium eyewear collection and find the perfect style for you.</p>
+          <button class="btn-empty-shop" onclick="backToShop()">Go back to Shop</button>
+          <button class="btn-empty-track" onclick="window.location.href='deliverystat.html'" style="margin-top: 8px;">🚚 Track Order</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content profile-modal">
+      <span class="close" onclick="closeProfileModal()">&times;</span>
+      <div class="profile-modal-header">
+        <h2>My Profile</h2>
+      </div>
+
+      <!-- Profile Tabs -->
+      <div class="profile-modal-tabs">
+        <button class="profile-tab-btn active" data-tab="account" onclick="switchProfileTab('account')">👤 Account</button>
+        <button class="profile-tab-btn" data-tab="addresses" onclick="switchProfileTab('addresses')">📍 Addresses</button>
+        <button class="profile-tab-btn" data-tab="payments" onclick="switchProfileTab('payments')">💳 Payments</button>
+      </div>
+
+      <div class="profile-section">
+        <!-- Tab 1: Account Info -->
+        <div class="profile-tab-content active" id="profileTabAccount">
+          <!-- Profile Picture -->
+          <div class="profile-pic-section">
+            <img id="profilePictureModal" class="profile-pic-large"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230088ee'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M12 14c-6 0-8 3-8 3v5h16v-5s-2-3-8-3z'/%3E%3C/svg%3E"
+              alt="Profile">
+            <label class="upload-pic-btn" for="profilePictureInput">Change Picture</label>
+            <input type="file" id="profilePictureInput" accept="image/*" style="display:none;">
+          </div>
+        </div>
+
+        <!-- Tab 2: Addresses -->
+        <div class="profile-tab-content" id="profileTabAddresses">
+          <!-- Delivery Information - Multiple Addresses -->
+          <div class="delivery-info">
+            <h3>Delivery Addresses</h3>
+
+            <!-- Saved Addresses List -->
+            <div id="addressesList" class="addresses-list">
+              <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Add New Address Button -->
+            <button type="button" class="btn btn-add-address" onclick="openAddAddressForm()">
+              + Add New Address
+            </button>
+
+            <!-- Add/Edit Address Form (Hidden by default) -->
+            <form id="addressForm" class="address-form" style="display:none;">
+              <h4>Address Details</h4>
+              <input type="hidden" id="addressIndex" value="">
+
+              <div class="form-group-inline">
+                <div class="form-group">
+                  <label>Full Name</label>
+                  <input type="text" id="addressName" required>
+                </div>
+                <div class="form-group">
+                  <label>Phone Number</label>
+                  <input type="tel" id="addressPhone" required>
+                </div>
+              </div>
+
+              <div class="form-group-inline">
+                <div class="form-group">
+                  <label>Address</label>
+                  <input type="text" id="addressStreet" required>
+                </div>
+                <div class="form-group">
+                  <label>City</label>
+                  <input type="text" id="addressCity" required>
+                </div>
+              </div>
+
+              <div class="form-group-inline">
+                <div class="form-group">
+                  <label>State/Province</label>
+                  <input type="text" id="addressState" required>
+                </div>
+                <div class="form-group">
+                  <label>ZIP Code</label>
+                  <input type="text" id="addressZip" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Country</label>
+                <input type="text" id="addressCountry" value="Philippines">
+              </div>
+
+              <div class="form-group checkbox">
+                <input type="checkbox" id="setDefault">
+                <label for="setDefault">Set as default address</label>
+              </div>
+
+              <div class="profile-actions">
+                <button type="button" class="btn btn-primary" onclick="saveAddress()">Save Address</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelAddressForm()">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Tab 3: Payments -->
+        <div class="profile-tab-content" id="profileTabPayments">
+          <!-- Payment Methods -->
+          <div class="payment-info">
+            <h3>💳 Saved Payment Methods</h3>
+
+            <!-- Saved Payment Methods List -->
+            <div id="paymentMethodsList" class="payment-methods-list">
+              <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Add New Payment Method Button -->
+            <button type="button" class="btn btn-add-address" onclick="openAddPaymentForm()">
+              + Add New Payment Method
+            </button>
+
+            <!-- Add/Edit Payment Method Form (Hidden by default) -->
+            <form id="paymentMethodForm" class="address-form" style="display:none;">
+              <h4>Payment Method Details</h4>
+              <input type="hidden" id="paymentMethodIndex" value="">
+
+              <!-- Payment Method Type Selection -->
+              <div class="form-group">
+                <label>Payment Method Type *</label>
+                <select id="paymentMethodType" onchange="updatePaymentForm()" required>
+                  <option value="">Select a payment method...</option>
+                  <option value="credit-card">💳 Credit/Debit Card</option>
+                  <option value="paypal">🅿️ PayPal</option>
+                  <option value="maya">🏦 Maya</option>
+                  <option value="gcash">📱 GCash</option>
+                </select>
+              </div>
+
+              <!-- Credit Card Fields -->
+              <div id="creditCardFields" style="display:none;">
+                <div class="form-group">
+                  <label>Cardholder Name *</label>
+                  <input type="text" id="paymentCardName">
+                </div>
+                <div class="form-group">
+                  <label>Card Number *</label>
+                  <input type="text" id="paymentCardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                <div class="form-group-inline">
+                  <div class="form-group">
+                    <label>Expiry Date *</label>
+                    <input type="text" id="paymentCardExpiry" placeholder="MM/YY" maxlength="5">
+                  </div>
+                  <div class="form-group">
+                    <label>CVV *</label>
+                    <input type="text" id="paymentCardCvv" placeholder="123" maxlength="3">
+                  </div>
+                </div>
+              </div>
+
+              <!-- PayPal Fields -->
+              <div id="paypalFields" style="display:none;">
+                <div class="form-group">
+                  <label>PayPal Email *</label>
+                  <input type="email" id="paymentPaypalEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                  <label>PayPal Password *</label>
+                  <input type="password" id="paymentPaypalPassword" placeholder="Enter your password">
+                </div>
+              </div>
+
+              <!-- Maya Fields -->
+              <div id="mayaFields" style="display:none;">
+                <div class="form-group">
+                  <label>Registered Email *</label>
+                  <input type="email" id="paymentMayaEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                  <label>Mobile Number *</label>
+                  <input type="tel" id="paymentMayaMobile" placeholder="+63 9XX XXX XXXX">
+                </div>
+              </div>
+
+              <!-- GCash Fields -->
+              <div id="gcashFields" style="display:none;">
+                <div class="form-group">
+                  <label>GCash Mobile Number *</label>
+                  <input type="tel" id="paymentGcashMobile" placeholder="+63 9XX XXX XXXX">
+                </div>
+                <div class="form-group">
+                  <label>GCash PIN *</label>
+                  <input type="password" id="paymentGcashPin" placeholder="Enter your PIN" maxlength="4">
+                </div>
+              </div>
+
+              <div class="form-group checkbox">
+                <input type="checkbox" id="setDefaultPayment">
+                <label for="setDefaultPayment">Set as default payment method</label>
+              </div>
+
+              <div class="profile-actions">
+                <button type="button" class="btn btn-primary" onclick="savePaymentMethod()">Save Payment Method</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelPaymentForm()">Cancel</button>
+              </div>
+            </form>
+
+            <!-- Delete/Manage Payment Methods Info -->
+            <p class="payment-info-text" id="paymentInfoText"
+              style="display:none; font-size: 12px; color: #8fa4bb; margin-top: 12px;">
+              ℹ️ Manage your saved payment methods. Only delete if you no longer use this card or account.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script src="checkout.js"></script>
+</body>
+</html>

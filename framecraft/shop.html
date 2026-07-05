@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop - FrameCraft</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="shop.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">FrameCraft</div>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html#home"     class="nav-link">Home</a></li>
+        <li><a href="index.html#products" class="nav-link">Products</a></li>
+        <li><a href="index.html#about"    class="nav-link">About</a></li>
+        <li><a href="index.html#contact"  class="nav-link">Contact</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+      </ul>
+      <div class="nav-auth">
+        <!-- Cart Icon -->
+        <div class="nav-icon-group">
+          <button class="nav-icon-btn" id="cartBtn" onclick="openCart()">
+            <span class="icon">🛒</span>
+            <span class="cart-badge" id="cartBadge">0</span>
+          </button>
+        </div>
+
+        <!-- Profile Icon -->
+        <div class="nav-icon-group">
+          <button class="nav-icon-btn" id="profileBtn" onclick="openProfileModal()">
+            <img id="profileImage" class="profile-pic-small" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230088ee'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M12 14c-6 0-8 3-8 3v5h16v-5s-2-3-8-3z'/%3E%3C/svg%3E" alt="Profile">
+          </button>
+        </div>
+
+        <!-- Logout Button -->
+        <button class="btn btn-logout" id="logoutBtn" onclick="logout()">Logout</button>
+
+        <div class="hamburger" id="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Shop Section -->
+  <section class="shop-section">
+    <div class="container">
+      <div class="shop-header">
+        <h1>Welcome to Our Shop</h1>
+        <p id="shopGreeting"></p>
+      </div>
+
+      <!-- Single Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-control search-control">
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Search products..." 
+            onkeyup="applyFilters()"
+          >
+        </div>
+
+        <div class="filter-control">
+          <label for="typeSelect">Type:</label>
+          <select id="typeSelect" onchange="applyFilters()">
+            <option value="all">All Types</option>
+            <option value="aviator">Aviators</option>
+            <option value="cat-eye">Cat Eye</option>
+            <option value="round">Round</option>
+            <option value="sport">Sport</option>
+          </select>
+        </div>
+
+        <div class="filter-control">
+          <label for="priceSelect">Price:</label>
+          <select id="priceSelect" onchange="applyFilters()">
+            <option value="all">All Prices</option>
+            <option value="under-100">Under ₱100</option>
+            <option value="100-150">₱100 - ₱150</option>
+            <option value="150-200">₱150 - ₱200</option>
+            <option value="above-200">Above ₱200</option>
+          </select>
+        </div>
+
+        <div class="filter-control">
+          <label for="stockSelect">Stock:</label>
+          <select id="stockSelect" onchange="applyFilters()">
+            <option value="all">All Items</option>
+            <option value="in-stock">In Stock</option>
+            <option value="out-of-stock">Out of Stock</option>
+          </select>
+        </div>
+
+        <div class="filter-control">
+          <label for="saleSelect">Sales:</label>
+          <select id="saleSelect" onchange="applyFilters()">
+            <option value="all">All Products</option>
+            <option value="on-sale">On Sale</option>
+            <option value="no-sale">No Sale</option>
+          </select>
+        </div>
+
+        <div class="filter-control">
+          <label for="sortSelect">Sort By:</label>
+          <select id="sortSelect" onchange="applyFilters()">
+            <option value="default">Default</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="rating">Top Rated</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="products-grid" id="productsGrid">
+        <!-- Products will be rendered here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Cart Notification -->
+  <div id="cartNotification" class="cart-notification">
+    <p id="cartMessage"></p>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Add to Cart Modal -->
+  <div id="cartModal" class="modal">
+    <div class="modal-content cart-modal-content">
+      <span class="close" onclick="closeCartModal()">&times;</span>
+      
+      <div class="cart-modal-body">
+        <!-- Product Image -->
+        <div class="cart-modal-image">
+          <img id="modalProductImage" src="" alt="Product">
+        </div>
+
+        <!-- Product Info -->
+        <div class="cart-modal-info">
+          <h2 id="modalProductName"></h2>
+          <p id="modalProductDesc" class="product-desc"></p>
+
+          <!-- Rating -->
+          <div class="rating-section">
+            <span class="rating-stars" id="modalRating"></span>
+            <span id="modalReviews" class="rating-count"></span>
+          </div>
+
+          <!-- Stock Info -->
+          <div class="stock-section">
+            <span class="stock-label">Stock Available:</span>
+            <span id="modalStock" class="stock-count"></span>
+          </div>
+
+          <!-- Size Selection -->
+          <div class="size-section">
+            <label>Size:</label>
+            <div class="size-options">
+              <button class="size-btn" onclick="selectSize('S')">S</button>
+              <button class="size-btn" onclick="selectSize('M')">M</button>
+              <button class="size-btn" onclick="selectSize('L')">L</button>
+              <button class="size-btn" onclick="selectSize('XL')">XL</button>
+            </div>
+            <input type="hidden" id="selectedSize">
+          </div>
+
+          <!-- Quantity Selection -->
+          <div class="quantity-section">
+            <label>Quantity:</label>
+            <div class="quantity-control">
+              <button onclick="decreaseQuantity()">−</button>
+              <input type="number" id="quantityInput" value="1" min="1" readonly>
+              <button onclick="increaseQuantity()">+</button>
+            </div>
+          </div>
+
+          <!-- Price -->
+          <div class="price-section">
+            <span id="modalPrice" class="price"></span>
+            <span id="modalOriginalPrice" class="original-price"></span>
+          </div>
+
+          <!-- Add to Cart Button -->
+          <button class="btn-modal-add-to-cart" onclick="confirmAddToCart()">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content profile-modal">
+      <span class="close" onclick="closeProfileModal()">&times;</span>
+      <div class="profile-modal-header">
+        <h2>My Profile</h2>
+      </div>
+
+      <!-- Profile Tabs -->
+      <div class="profile-modal-tabs">
+        <button class="profile-tab-btn active" data-tab="account" onclick="switchProfileTab('account')">👤 Account</button>
+        <button class="profile-tab-btn" data-tab="addresses" onclick="switchProfileTab('addresses')">📍 Addresses</button>
+        <button class="profile-tab-btn" data-tab="payments" onclick="switchProfileTab('payments')">💳 Payments</button>
+      </div>
+
+      <div class="profile-section">
+        <!-- Tab 1: Account Info -->
+        <div class="profile-tab-content active" id="profileTabAccount">
+          <!-- Profile Picture -->
+          <div class="profile-pic-section">
+            <img id="profilePictureModal" class="profile-pic-large"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230088ee'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M12 14c-6 0-8 3-8 3v5h16v-5s-2-3-8-3z'/%3E%3C/svg%3E"
+              alt="Profile">
+            <label class="upload-pic-btn" for="profilePictureInput">Change Picture</label>
+            <input type="file" id="profilePictureInput" accept="image/*" style="display:none;">
+          </div>
+        </div>
+
+        <!-- Tab 2: Addresses -->
+        <div class="profile-tab-content" id="profileTabAddresses">
+          <!-- Delivery Information - Multiple Addresses -->
+          <div class="delivery-info">
+            <h3>Delivery Addresses</h3>
+
+            <!-- Saved Addresses List -->
+            <div id="addressesList" class="addresses-list">
+              <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Add New Address Button -->
+            <button type="button" class="btn btn-add-address" onclick="openAddAddressForm()">
+              + Add New Address
+            </button>
+
+            <!-- Add/Edit Address Form (Hidden by default) -->
+            <form id="addressForm" class="address-form" style="display:none;">
+              <h4>Address Details</h4>
+              <input type="hidden" id="addressIndex" value="">
+
+              <div class="form-group-inline">
+                <div class="form-group">
+                  <label>Full Name</label>
+                  <input type="text" id="addressName" required>
+                </div>
+                <div class="form-group">
+                  <label>Phone Number</label>
+                  <input type="tel" id="addressPhone" required>
+                </div>
+              </div>
+
+              <div class="form-group-inline">
+                <div class="form-group">
+                  <label>Address</label>
+                  <input type="text" id="addressStreet" required>
+                </div>
+                <div class="form-group">
+                  <label>City</label>
+                  <input type="text" id="addressCity" required>
+                </div>
+              </div>
+
+              <div class="form-group-inline">
+                <div class="form-group">
+                  <label>State/Province</label>
+                  <input type="text" id="addressState" required>
+                </div>
+                <div class="form-group">
+                  <label>ZIP Code</label>
+                  <input type="text" id="addressZip" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Country</label>
+                <input type="text" id="addressCountry" value="Philippines">
+              </div>
+
+              <div class="form-group checkbox">
+                <input type="checkbox" id="setDefault">
+                <label for="setDefault">Set as default address</label>
+              </div>
+
+              <div class="profile-actions">
+                <button type="button" class="btn btn-primary" onclick="saveAddress()">Save Address</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelAddressForm()">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Tab 3: Payments -->
+        <div class="profile-tab-content" id="profileTabPayments">
+          <!-- Payment Methods -->
+          <div class="payment-info">
+            <h3>💳 Saved Payment Methods</h3>
+
+            <!-- Saved Payment Methods List -->
+            <div id="paymentMethodsList" class="payment-methods-list">
+              <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Add New Payment Method Button -->
+            <button type="button" class="btn btn-add-address" onclick="openAddPaymentForm()">
+              + Add New Payment Method
+            </button>
+
+            <!-- Add/Edit Payment Method Form (Hidden by default) -->
+            <form id="paymentMethodForm" class="address-form" style="display:none;">
+              <h4>Payment Method Details</h4>
+              <input type="hidden" id="paymentMethodIndex" value="">
+
+              <!-- Payment Method Type Selection -->
+              <div class="form-group">
+                <label>Payment Method Type *</label>
+                <select id="paymentMethodType" onchange="updatePaymentForm()" required>
+                  <option value="">Select a payment method...</option>
+                  <option value="credit-card">💳 Credit/Debit Card</option>
+                  <option value="paypal">🅿️ PayPal</option>
+                  <option value="maya">🏦 Maya</option>
+                  <option value="gcash">📱 GCash</option>
+                </select>
+              </div>
+
+              <!-- Credit Card Fields -->
+              <div id="creditCardFields" style="display:none;">
+                <div class="form-group">
+                  <label>Cardholder Name *</label>
+                  <input type="text" id="paymentCardName">
+                </div>
+                <div class="form-group">
+                  <label>Card Number *</label>
+                  <input type="text" id="paymentCardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                <div class="form-group-inline">
+                  <div class="form-group">
+                    <label>Expiry Date *</label>
+                    <input type="text" id="paymentCardExpiry" placeholder="MM/YY" maxlength="5">
+                  </div>
+                  <div class="form-group">
+                    <label>CVV *</label>
+                    <input type="text" id="paymentCardCvv" placeholder="123" maxlength="3">
+                  </div>
+                </div>
+              </div>
+
+              <!-- PayPal Fields -->
+              <div id="paypalFields" style="display:none;">
+                <div class="form-group">
+                  <label>PayPal Email *</label>
+                  <input type="email" id="paymentPaypalEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                  <label>PayPal Password *</label>
+                  <input type="password" id="paymentPaypalPassword" placeholder="Enter your password">
+                </div>
+              </div>
+
+              <!-- Maya Fields -->
+              <div id="mayaFields" style="display:none;">
+                <div class="form-group">
+                  <label>Registered Email *</label>
+                  <input type="email" id="paymentMayaEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                  <label>Mobile Number *</label>
+                  <input type="tel" id="paymentMayaMobile" placeholder="+63 9XX XXX XXXX">
+                </div>
+              </div>
+
+              <!-- GCash Fields -->
+              <div id="gcashFields" style="display:none;">
+                <div class="form-group">
+                  <label>GCash Mobile Number *</label>
+                  <input type="tel" id="paymentGcashMobile" placeholder="+63 9XX XXX XXXX">
+                </div>
+                <div class="form-group">
+                  <label>GCash PIN *</label>
+                  <input type="password" id="paymentGcashPin" placeholder="Enter your PIN" maxlength="4">
+                </div>
+              </div>
+
+              <div class="form-group checkbox">
+                <input type="checkbox" id="setDefaultPayment">
+                <label for="setDefaultPayment">Set as default payment method</label>
+              </div>
+
+              <div class="profile-actions">
+                <button type="button" class="btn btn-primary" onclick="savePaymentMethod()">Save Payment Method</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelPaymentForm()">Cancel</button>
+              </div>
+            </form>
+
+            <!-- Delete/Manage Payment Methods Info -->
+            <p class="payment-info-text" id="paymentInfoText"
+              style="display:none; font-size: 12px; color: #8fa4bb; margin-top: 12px;">
+              ℹ️ Manage your saved payment methods. Only delete if you no longer use this card or account.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script src="shop.js"></script>
+</body>
+</html>

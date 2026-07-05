@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders & Tracking - FrameCraft</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="deliverystat.css">
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">FrameCraft</div>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html#home" class="nav-link">Home</a></li>
+        <li><a href="index.html#products" class="nav-link">Products</a></li>
+        <li><a href="index.html#about" class="nav-link">About</a></li>
+        <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+        <li><a href="shop.html" class="nav-link" id="shopLink" style="display:none;">Shop</a></li>
+      </ul>
+      <div class="nav-auth">
+        <a href="shop.html" class="nav-back-link"><span>←</span> Back to Shop</a>
+
+        <!-- Cart Icon -->
+        <div class="nav-icon-group" id="cartGroup" style="display:none;">
+          <button class="nav-icon-btn" id="cartBtn" onclick="openCart()">
+            <span class="icon">🛒</span>
+            <span class="cart-badge" id="cartBadge">0</span>
+          </button>
+        </div>
+
+        <!-- Profile Icon -->
+        <div class="nav-icon-group" id="profileGroup" style="display:none;">
+          <button class="nav-icon-btn" id="profileBtn" onclick="openProfileModal()">
+            <img id="profileImage" class="profile-pic-small" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230088ee'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M12 14c-6 0-8 3-8 3v5h16v-5s-2-3-8-3z'/%3E%3C/svg%3E" alt="Profile">
+          </button>
+        </div>
+
+        <!-- Logout Button -->
+        <button class="btn btn-logout" id="logoutBtn" style="display:none;" onclick="logout()">Logout</button>
+      </div>
+      <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Section -->
+  <div class="container dashboard-container">
+    <div class="dashboard-header">
+      <h1 class="dashboard-title">My Orders & Tracking</h1>
+      <p class="dashboard-subtitle">Track your delivery status, view receipt details, and order history.</p>
+    </div>
+
+    <div class="dashboard-content">
+      <!-- Horizontal Filter Tabs -->
+      <div class="orders-filter-container">
+        <div class="orders-filter-tabs" id="filterTabs">
+          <button class="filter-tab active" data-filter="All">All Orders</button>
+          <button class="filter-tab" data-filter="Active">In Progress</button>
+          <button class="filter-tab" data-filter="Delivered">Delivered</button>
+          <button class="filter-tab" data-filter="Cancelled">Cancelled</button>
+        </div>
+      </div>
+
+      <!-- Orders Card Listing -->
+      <div class="orders-grid" id="ordersGrid">
+        <!-- Populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div id="orderDetailsModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeDetailsModal()">&times;</span>
+      <h2 class="modal-title" style="margin-bottom: 20px;">Receipt & Order Details</h2>
+      <div id="orderDetailsContent">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content profile-modal">
+      <span class="close" onclick="closeProfileModal()">&times;</span>
+      <div class="profile-modal-header">
+        <h2>My Profile</h2>
+      </div>
+
+      <!-- Profile Tabs -->
+      <div class="profile-modal-tabs">
+        <button class="profile-tab-btn active" data-tab="account" onclick="switchProfileTab('account')">👤 Account</button>
+        <button class="profile-tab-btn" data-tab="addresses" onclick="switchProfileTab('addresses')">📍 Addresses</button>
+        <button class="profile-tab-btn" data-tab="payments" onclick="switchProfileTab('payments')">💳 Payments</button>
+      </div>
+
+      <div class="profile-section">
+        <!-- Tab 1: Account Info -->
+        <div class="profile-tab-content active" id="profileTabAccount">
+          <!-- Profile Picture -->
+          <div class="profile-pic-section">
+            <img id="profilePictureModal" class="profile-pic-large"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230088ee'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M12 14c-6 0-8 3-8 3v5h16v-5s-2-3-8-3z'/%3E%3C/svg%3E"
+              alt="Profile">
+            <label class="upload-pic-btn" for="profilePictureInput">Change Picture</label>
+            <input type="file" id="profilePictureInput" accept="image/*" style="display:none;">
+          </div>
+        </div>
+
+        <!-- Tab 2: Addresses -->
+        <div class="profile-tab-content" id="profileTabAddresses">
+          <!-- Delivery Information - Multiple Addresses -->
+          <div class="delivery-info">
+            <h3>Delivery Addresses</h3>
+
+            <!-- Saved Addresses List -->
+            <div id="addressesList" class="addresses-list">
+              <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Add New Address Button -->
+            <button type="button" class="btn btn-add-address" onclick="openAddAddressForm()">
+              + Add New Address
+            </button>
+
+            <!-- Add/Edit Address Form (Hidden by default) -->
+            <form id="addressForm" class="address-form" style="display:none;">
+              <h4>Address Details</h4>
+              <input type="hidden" id="addressIndex" value="">
+
+              <div class="form-group-inline">
+                <div class="form-group">
+                  <label>Full Name</label>
+                  <input type="text" id="addressName" required>
+                </div>
+                <div class="form-group">
+                  <label>Phone Number</label>
+                  <input type="tel" id="addressPhone" required>
+                </div>
+              </div>
+
+              <div class="form-group-inline">
+                <div class="form-group">
+                  <label>Address</label>
+                  <input type="text" id="addressStreet" required>
+                </div>
+                <div class="form-group">
+                  <label>City</label>
+                  <input type="text" id="addressCity" required>
+                </div>
+              </div>
+
+              <div class="form-group-inline">
+                <div class="form-group">
+                  <label>State/Province</label>
+                  <input type="text" id="addressState" required>
+                </div>
+                <div class="form-group">
+                  <label>ZIP Code</label>
+                  <input type="text" id="addressZip" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Country</label>
+                <input type="text" id="addressCountry" value="Philippines">
+              </div>
+
+              <div class="form-group checkbox">
+                <input type="checkbox" id="setDefault">
+                <label for="setDefault">Set as default address</label>
+              </div>
+
+              <div class="profile-actions">
+                <button type="button" class="btn btn-primary" onclick="saveAddress()">Save Address</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelAddressForm()">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Tab 3: Payments -->
+        <div class="profile-tab-content" id="profileTabPayments">
+          <!-- Payment Methods -->
+          <div class="payment-info">
+            <h3>💳 Saved Payment Methods</h3>
+
+            <!-- Saved Payment Methods List -->
+            <div id="paymentMethodsList" class="payment-methods-list">
+              <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Add New Payment Method Button -->
+            <button type="button" class="btn btn-add-address" onclick="openAddPaymentForm()">
+              + Add New Payment Method
+            </button>
+
+            <!-- Add/Edit Payment Method Form (Hidden by default) -->
+            <form id="paymentMethodForm" class="address-form" style="display:none;">
+              <h4>Payment Method Details</h4>
+              <input type="hidden" id="paymentMethodIndex" value="">
+
+              <!-- Payment Method Type Selection -->
+              <div class="form-group">
+                <label>Payment Method Type *</label>
+                <select id="paymentMethodType" onchange="updatePaymentForm()" required>
+                  <option value="">Select a payment method...</option>
+                  <option value="credit-card">💳 Credit/Debit Card</option>
+                  <option value="paypal">🅿️ PayPal</option>
+                  <option value="maya">🏦 Maya</option>
+                  <option value="gcash">📱 GCash</option>
+                </select>
+              </div>
+
+              <!-- Credit Card Fields -->
+              <div id="creditCardFields" style="display:none;">
+                <div class="form-group">
+                  <label>Cardholder Name *</label>
+                  <input type="text" id="paymentCardName">
+                </div>
+                <div class="form-group">
+                  <label>Card Number *</label>
+                  <input type="text" id="paymentCardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                <div class="form-group-inline">
+                  <div class="form-group">
+                    <label>Expiry Date *</label>
+                    <input type="text" id="paymentCardExpiry" placeholder="MM/YY" maxlength="5">
+                  </div>
+                  <div class="form-group">
+                    <label>CVV *</label>
+                    <input type="text" id="paymentCardCvv" placeholder="123" maxlength="3">
+                  </div>
+                </div>
+              </div>
+
+              <!-- PayPal Fields -->
+              <div id="paypalFields" style="display:none;">
+                <div class="form-group">
+                  <label>PayPal Email *</label>
+                  <input type="email" id="paymentPaypalEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                  <label>PayPal Password *</label>
+                  <input type="password" id="paymentPaypalPassword" placeholder="Enter your password">
+                </div>
+              </div>
+
+              <!-- Maya Fields -->
+              <div id="mayaFields" style="display:none;">
+                <div class="form-group">
+                  <label>Registered Email *</label>
+                  <input type="email" id="paymentMayaEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                  <label>Mobile Number *</label>
+                  <input type="tel" id="paymentMayaMobile" placeholder="+63 9XX XXX XXXX">
+                </div>
+              </div>
+
+              <!-- GCash Fields -->
+              <div id="gcashFields" style="display:none;">
+                <div class="form-group">
+                  <label>GCash Mobile Number *</label>
+                  <input type="tel" id="paymentGcashMobile" placeholder="+63 9XX XXX XXXX">
+                </div>
+                <div class="form-group">
+                  <label>GCash PIN *</label>
+                  <input type="password" id="paymentGcashPin" placeholder="Enter your PIN" maxlength="4">
+                </div>
+              </div>
+
+              <div class="form-group checkbox">
+                <input type="checkbox" id="setDefaultPayment">
+                <label for="setDefaultPayment">Set as default payment method</label>
+              </div>
+
+              <div class="profile-actions">
+                <button type="button" class="btn btn-primary" onclick="savePaymentMethod()">Save Payment Method</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelPaymentForm()">Cancel</button>
+              </div>
+            </form>
+
+            <!-- Delete/Manage Payment Methods Info -->
+            <p class="payment-info-text" id="paymentInfoText"
+              style="display:none; font-size: 12px; color: #8fa4bb; margin-top: 12px;">
+              ℹ️ Manage your saved payment methods. Only delete if you no longer use this card or account.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Modal -->
+  <div id="reviewModal" class="modal">
+    <div class="modal-content review-modal-content">
+      <span class="close" onclick="closeReviewModal()">&times;</span>
+      <h2 class="modal-title" style="margin-bottom: 10px;">Rate & Review Glasses</h2>
+      <p style="color: var(--ink-500); font-size: 14px; margin-bottom: 20px;">Share your experience with <strong id="reviewProductName"></strong></p>
+      
+      <form id="reviewForm" onsubmit="submitReview(event)">
+        <input type="hidden" id="reviewProductId">
+        <input type="hidden" id="reviewOrderId">
+        
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label style="font-weight: 700; font-size: 13px; text-transform: uppercase; color: var(--ink-700); margin-bottom: 8px; display: block;">Your Rating *</label>
+          <div class="star-rating">
+            <input type="radio" id="star5" name="rating" value="5" required><label for="star5" title="5 stars">★</label>
+            <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars">★</label>
+            <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars">★</label>
+            <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars">★</label>
+            <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star">★</label>
+          </div>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label for="reviewComment" style="font-weight: 700; font-size: 13px; text-transform: uppercase; color: var(--ink-700); margin-bottom: 8px; display: block;">Your Comment *</label>
+          <textarea id="reviewComment" rows="4" placeholder="How do you like the fit, style, and build quality?" style="width: 100%; padding: 12px; border: 1px solid var(--blue-border); border-radius: var(--r-xs); font-family: inherit; font-size: 14px; resize: vertical;" required></textarea>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeReviewModal()" style="width: auto; margin-right: 12px; display: inline-block;">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="width: auto; display: inline-block;">Submit Review</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script src="deliverystat.js"></script>
+</body>
+</html>

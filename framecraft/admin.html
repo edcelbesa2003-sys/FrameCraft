@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Center - FrameCraft</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Admin Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-header">
+      <div class="logo">FrameCraft</div>
+      <span class="role-badge">CONTROL PANEL</span>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-tab="overview">
+        <span class="nav-icon">📊</span> Overview
+      </button>
+      <button class="nav-item" data-tab="users">
+        <span class="nav-icon">👥</span> User Accounts
+      </button>
+      <button class="nav-item" data-tab="catalog">
+        <span class="nav-icon">🕶️</span> Eyeglasses Catalog
+      </button>
+      <button class="nav-item" data-tab="orders">
+        <span class="nav-icon">📦</span> User Orders
+      </button>
+      <button class="nav-item" data-tab="coupons">
+        <span class="nav-icon">🏷️</span> Promo Coupons
+      </button>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="admin-profile">
+        <div class="admin-avatar">👤</div>
+        <div class="admin-info">
+          <span class="admin-name" id="adminGreetingName">Admin</span>
+          <span class="admin-role">System Administrator</span>
+        </div>
+      </div>
+      <button class="btn btn-logout-admin" onclick="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="admin-main">
+    
+    <!-- Tab: Overview -->
+    <section class="admin-section active" id="tab-overview">
+      <div class="section-header">
+        <h1>Dashboard Overview</h1>
+        <p>Real-time analytics and quick system metrics.</p>
+      </div>
+
+      <!-- KPI Analytics Grid -->
+      <div class="kpi-grid">
+        <div class="kpi-card purple">
+          <div class="kpi-icon">👥</div>
+          <div class="kpi-content">
+            <span class="kpi-value" id="kpi-total-users">0</span>
+            <span class="kpi-label">Registered Accounts</span>
+          </div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-icon">🕶️</div>
+          <div class="kpi-content">
+            <span class="kpi-value" id="kpi-total-catalog">0</span>
+            <span class="kpi-label">Total Eyeglasses</span>
+          </div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-icon">📦</div>
+          <div class="kpi-content">
+            <span class="kpi-value" id="kpi-total-orders">0</span>
+            <span class="kpi-label">Orders Received</span>
+          </div>
+        </div>
+        <div class="kpi-card amber">
+          <div class="kpi-icon">🔥</div>
+          <div class="kpi-content">
+            <span class="kpi-value" id="kpi-total-sales">0</span>
+            <span class="kpi-label">Active Promos & Sales</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="split-row">
+        <!-- Quick System Settings -->
+        <div class="card panel-card">
+          <h3>⚡ Quick Operations</h3>
+          <div class="ops-grid">
+            <button class="btn btn-primary" onclick="switchTab('catalog')">➕ Manage Products</button>
+            <button class="btn btn-secondary" onclick="switchTab('users')">🔑 Reset Passwords</button>
+            <button class="btn btn-secondary" onclick="switchTab('orders')">📦 View Active Shipments</button>
+            <button class="btn btn-danger-outline" onclick="resetSystemData()">⚠️ Restore Defaults</button>
+          </div>
+        </div>
+        
+        <div class="card panel-card">
+          <h3>📢 Administrator Bulletin</h3>
+          <div class="bulletin-list">
+            <div class="bulletin-item">
+              <span class="bulletin-tag info">SYSTEM</span>
+              <p>Welcome to the FrameCraft Control Panel. All modifications to catalog, accounts, or order statuses are immediately synced across storefront and tracking portals.</p>
+            </div>
+            <div class="bulletin-item">
+              <span class="bulletin-tag success">FEATURE</span>
+              <p>Real-time order update integration is live. Updating status on the 'User Orders' tab immediately triggers state animations on user's tracker timelines.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab: User Accounts -->
+    <section class="admin-section" id="tab-users">
+      <div class="section-header">
+        <div class="header-action-wrapper">
+          <div>
+            <h1>User Accounts Control</h1>
+            <p>Modify credentials, assign administrator roles, and audit account data.</p>
+          </div>
+          <button class="btn btn-primary" onclick="openAddUserModal()">➕ Add New Account</button>
+        </div>
+      </div>
+
+      <div class="card list-card">
+        <div class="table-controls">
+          <input type="text" id="searchUsersInput" placeholder="Search by name, email, or role..." oninput="renderUsers()">
+        </div>
+        <div class="table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Profile Info</th>
+                <th>Email Address</th>
+                <th>Role</th>
+                <th>Join Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab: Catalog Management -->
+    <section class="admin-section" id="tab-catalog">
+      <div class="section-header">
+        <div class="header-action-wrapper">
+          <div>
+            <h1>Eyeglasses Catalog</h1>
+            <p>Publish, delete, or modify frame selections, prices, and product tags.</p>
+          </div>
+          <button class="btn btn-primary" onclick="openAddProductModal()">➕ Add New Product</button>
+        </div>
+      </div>
+
+      <div class="card list-card">
+        <div class="table-controls flex-controls">
+          <input type="text" id="searchCatalogInput" placeholder="Search name, category, badge..." oninput="renderCatalog()">
+          <select id="filterCategorySelect" onchange="renderCatalog()">
+            <option value="all">All Categories</option>
+            <option value="Aviator">Aviators</option>
+            <option value="Cat Eye">Cat Eye</option>
+            <option value="Round">Round</option>
+            <option value="Sport">Sport</option>
+          </select>
+        </div>
+
+        <div class="catalog-grid" id="catalogContainer">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab: User Orders -->
+    <section class="admin-section" id="tab-orders">
+      <div class="section-header">
+        <h1>User Orders & Pipeline</h1>
+        <p>Confirm checkouts, assign tracking numbers, and manage shipment delivery statuses.</p>
+      </div>
+
+      <div class="card list-card">
+        <div class="table-controls">
+          <input type="text" id="searchOrdersInput" placeholder="Search Order ID, Customer Name, Phone..." oninput="renderOrders()">
+        </div>
+        <div class="table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Order Ref</th>
+                <th>Customer & Address</th>
+                <th>Items Ordered</th>
+                <th>Grand Total</th>
+                <th>Tracking Status</th>
+                <th>Confirmation</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab: Promo Coupons -->
+    <section class="admin-section" id="tab-coupons">
+      <div class="section-header">
+        <div class="header-action-wrapper">
+          <div>
+            <h1>Promo Coupons Control</h1>
+            <p>Create, manage, and delete promo discount codes for checkouts.</p>
+          </div>
+          <button class="btn btn-primary" onclick="openAddCouponModal()">➕ Add New Coupon</button>
+        </div>
+      </div>
+
+      <div class="card list-card">
+        <div class="table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Coupon Code</th>
+                <th>Discount Type</th>
+                <th>Discount Value</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="couponsTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal: Add/Edit User -->
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeUserModal()">&times;</span>
+      <h2 id="userModalTitle">Add Account</h2>
+      <form id="userForm" onsubmit="saveUserAccount(event)">
+        <input type="hidden" id="editUserIndex">
+        <input type="hidden" id="editUserEmail">
+        
+        <div class="form-group">
+          <label for="userNameInput">Full Name *</label>
+          <input type="text" id="userNameInput" required placeholder="e.g. Juan Dela Cruz">
+        </div>
+        <div class="form-group" id="emailFormGroup">
+          <label for="userEmailInput">Email Address *</label>
+          <input type="email" id="userEmailInput" required placeholder="e.g. juan@gmail.com">
+        </div>
+        <div class="form-group">
+          <label for="userPasswordInput">Account Password *</label>
+          <input type="text" id="userPasswordInput" required placeholder="Min 6 characters">
+        </div>
+        <div class="form-group">
+          <label for="userRoleInput">System Role</label>
+          <select id="userRoleInput">
+            <option value="user">User (Customer)</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeUserModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add/Edit Product -->
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeProductModal()">&times;</span>
+      <h2 id="productModalTitle">Add Eyeglasses Product</h2>
+      <form id="productForm" onsubmit="saveProductItem(event)">
+        <input type="hidden" id="editProductId">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prodName">Name *</label>
+            <input type="text" id="prodName" required placeholder="e.g. Gold Aviator Classic">
+          </div>
+          <div class="form-group">
+            <label for="prodCategory">Category *</label>
+            <select id="prodCategory" required>
+              <option value="Aviator">Aviator</option>
+              <option value="Cat Eye">Cat Eye</option>
+              <option value="Round">Round</option>
+              <option value="Sport">Sport</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prodPrice">Price (₱) *</label>
+            <input type="number" step="0.01" id="prodPrice" required placeholder="e.g. 129.99">
+          </div>
+          <div class="form-group">
+            <label for="prodOriginalPrice">Original Price (₱) <span class="optional">(Sales Only)</span></label>
+            <input type="number" step="0.01" id="prodOriginalPrice" placeholder="e.g. 159.99">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prodBadge">Product Badge</label>
+            <select id="prodBadge" onchange="updateBadgeLabel()">
+              <option value="">None</option>
+              <option value="new">New</option>
+              <option value="sale">Sale</option>
+              <option value="hot">Hot</option>
+              <option value="luxury">Luxury</option>
+              <option value="trending">Trending</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="prodBadgeLabel">Badge Text</label>
+            <input type="text" id="prodBadgeLabel" placeholder="e.g. Sale 20%">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="prodDesc">Description *</label>
+          <textarea id="prodDesc" required placeholder="Describe the style, fit, frame characteristics..." rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Product Image *</label>
+          <div class="image-drag-zone" id="imageDragZone">
+            <div class="drag-zone-content">
+              <span class="drag-icon">📁</span>
+              <p class="drag-text">Drag & drop image here, or <span>browse files</span></p>
+              <span class="drag-hint">Supports PNG, JPG, JPEG, SVG</span>
+            </div>
+            <img id="imagePreview" src="" alt="Preview" style="display: none;">
+            <button type="button" class="btn-remove-image" id="btnRemoveImage" style="display: none;">&times;</button>
+            <input type="file" id="prodImageFile" accept="image/*" style="display: none;">
+          </div>
+          <input type="hidden" id="prodImage">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prodRating">Simulated Rating (1-5)</label>
+            <input type="number" step="0.1" min="1" max="5" id="prodRating" value="4.8">
+          </div>
+          <div class="form-group">
+            <label for="prodReviews">Reviews Count</label>
+            <input type="number" id="prodReviews" value="120">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prodStockLimit">Stock Quantity *</label>
+            <input type="number" id="prodStockLimit" min="0" required placeholder="e.g. 10" value="10">
+          </div>
+          <div class="form-group">
+            <label for="prodInStock" style="margin-bottom: 8px;">Stock Status</label>
+            <div style="display: flex; align-items: center; height: 100%; min-height: 44px;">
+              <input type="checkbox" id="prodInStock" checked style="width: auto; margin: 0 8px 0 0; transform: scale(1.2); cursor: pointer;">
+              <label for="prodInStock" style="margin: 0; cursor: pointer; text-transform: none; font-weight: normal; color: var(--text-primary); font-size: 14px;">In Stock Available</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add/Edit Coupon -->
+  <div id="couponModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeCouponModal()">&times;</span>
+      <h2 id="couponModalTitle">Add Promo Coupon</h2>
+      <form id="couponForm" onsubmit="saveCouponAccount(event)">
+        <div class="form-group">
+          <label for="couponCodeInput">Coupon Code *</label>
+          <input type="text" id="couponCodeInput" required placeholder="e.g. WELCOME10" style="text-transform: uppercase;">
+        </div>
+        <div class="form-group">
+          <label for="couponTypeSelect">Discount Type *</label>
+          <select id="couponTypeSelect" required onchange="toggleCouponValuePlaceholder()">
+            <option value="percentage">Percentage Discount (%)</option>
+            <option value="fixed">Fixed Amount Discount (₱)</option>
+            <option value="free-shipping">Free Shipping</option>
+          </select>
+        </div>
+        <div class="form-group" id="couponValueGroup">
+          <label for="couponValueInput">Discount Value *</label>
+          <input type="number" step="0.01" min="0" id="couponValueInput" required placeholder="e.g. 10" value="10">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeCouponModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Coupon</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
